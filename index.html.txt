@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Website</title>
+    <!-- Using Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Using Phosphor Icons for modern SVG icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* =========================================
+           CSS RESET & VARIABLES
+           ========================================= */
+        :root {
+            --primary-color: #e50914; /* Cinema Red */
+            --background-dark: #141414;
+            --background-card: #1f1f1f;
+            --text-main: #ffffff;
+            --text-muted: #b3b3b3;
+            --font-main: 'Inter', sans-serif;
+            --transition-speed: 0.3s;
+            --container-width: 1200px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--background-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; transition: var(--transition-speed); }
+        ul { list-style: none; }
+        img { width: 100%; display: block; }
+        button { cursor: pointer; border: none; font-family: inherit; }
+
+        /* =========================================
+           HEADER & NAVIGATION
+           ========================================= */
+        header {
+            background-color: rgba(20, 20, 20, 0.95);
+            padding: 1rem 5%;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #333;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: -0.5px;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--text-main);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        #search-input {
+            background: #000;
+            border: 1px solid #333;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            width: 250px;
+            transition: var(--transition-speed);
+        }
+
+        #search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        /* =========================================
+           LAYOUT UTILITIES
+           ========================================= */
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 6rem 1.5rem 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* =========================================
+           HOME VIEW
+           ========================================= */
+        /* Hero Section */
+        .hero {
+            height: 70vh;
+            background: linear-gradient(to top, var(--background-dark), transparent), url('https://picsum.photos/seed/hero1/1920/1080') no-repeat center center/cover;
+            display: flex;
+            align-items: center;
+            padding: 0 5%;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            animation: fadeIn Up 0.8s ease;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: #ddd;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-speed);
+        }
+
+        .btn-primary:hover {
+            background-color: #f40612;
+            transform: scale(1.05);
+        }
+
+        /* Movie Grid */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .movie-card {
+            background-color: var(--background-card);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: var(--transition-speed);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .poster-wrapper {
+            position: relative;
+            padding-top: 150%; /* Aspect Ratio 2:3 */
+        }
+
+        .poster-wrapper img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .movie-info {
+            padding: 1rem;
+        }
+
+        .movie-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .movie-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .rating-badge {
+            background: #333;
+            color: #46d369;
+            padding: 0.1rem 0.4rem;
+            border-radius: 2px;
+            font-weight: 700;
+        }
+
+        /* =========================================
+           MOVIE DETAILS VIEW
+           ========================================= */
+        #details-view {
+            display: none; /* Hidden by default */
+            padding-top: 6rem;
+        }
+
+        .details-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 3rem;
+        }
+
+        .details-poster img {
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .details-info h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tags {
+            display: flex;
+            gap: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .video-player {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .video-player iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Action Bar */
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            background: #333;
+            color: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: 0.2s;
+        }
+
+        .btn-action:hover { background: #444; }
+        .btn-action.active { background: var(--primary-color); }
+        .btn-action i { font-size: 1.2rem; }
+
+        /* Rating Section */
+        .rating-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #1a1a1a;
+            border-radius: 8px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 2rem;
+            color: #444;
+            cursor: pointer;
+        }
+
+        .stars i:hover, .stars i.active {
+            color: #ffc107;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            background: var(--background-card);
+            padding: 2rem;
+            border-radius: 8px;
+        }
+
+        .comment-form {
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #141414;
+            border: 1px solid #333;
+            color: white;
+            padding: 0.8rem;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .form-control:focus { outline: 1px solid var(--primary-color); }
+
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .comment-item {
+            border-bottom: 1px solid #333;
+            padding-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .comment-content h4 {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .comment-text {
+            font-size: 1rem;
+        }
+
+        .delete-btn {
+            color: var(--primary-color);
+            background: none;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+        .delete-btn:hover { opacity: 1; text-decoration: underline; }
+
+        /* Toast Notification */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: 0.3s;
+            z-index: 2000;
+        }
+        #toast.show { transform: translateY(0); opacity: 1; }
+
+        /* =========================================
+           FOOTER
+           ========================================= */
+        footer {
+            background-color: #000;
+            padding: 3rem 5%;
+            margin-top: 4rem;
+            border-top: 1px solid #333;
+            color: var(--text-muted);
+        }
+
+        .footer-content {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1.5rem;
+        }
+
+        .social-links a {
+            font-size: 1.5rem;
+            margin: 0 10px;
+            color: white;
+        }
+        .social-links a:hover { color: var(--primary-color); }
+
+        /* =========================================
+           RESPONSIVE
+           ========================================= */
+        @media (max-width: 768px) {
+            header { flex-direction: column; gap: 1rem; padding: 1rem; }
+            .details-container { grid-template-columns: 1fr; }
+            nav ul { font-size: 0.9rem; gap: 1rem; }
+            #search-input { width: 100%; }
+            .hero h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">FILM WEBSITE</div>
+        <nav>
+            <ul>
+                <li><a href="#" onclick="app.showHome()">Home</a></li>
+                <li><a href="#">Movies</a></li>
+                <li><a href="#">TV Shows</a></li>
+                <li><a href="#">Genres</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+        <div class="header-actions">
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search movies...">
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <!-- Home View -->
+        <section id="home-view">
+            <!-- Hero -->
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>Infinite Horizons</h1>
+                    <p>Experience the journey of a lifetime in this year's most anticipated sci-fi thriller. Available now in stunning 4K.</p>
+                    <button class="btn-primary" onclick="app.showMovieDetails(1)">
+                        <i class="ph ph-play-circle"></i> Watch Trailer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Movie Grid -->
+            <div class="container">
+                <div class="section-title">
+                    <i class="ph ph-film-strip"></i> Trending Now
+                </div>
+                <div class="movie-grid" id="movie-grid">
+                    <!-- Movies will be injected here via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Movie Details View -->
+        <section id="details-view">
+            <div class="container details-container">
+                <!-- Left: Poster & Basic Info -->
+                <div class="details-poster">
+                    <img id="detail-poster" src="" alt="Movie Poster">
+                </div>
+
+                <!-- Right: Info, Video, Interactions -->
+                <div class="details-info">
+                    <h1 id="detail-title">Movie Title</h1>
+                    <div class="tags">
+                        <span id="detail-year">2023</span> |
+                        <span id="detail-duration">2h 15m</span> |
+                        <span id="detail-genre">Sci-Fi</span> |
+                        <span class="rating-badge" id="detail-rating">4.8</span>
+                    </div>
+
+                    <p class="description" id="detail-desc">
+                        Movie description goes here...
+                    </p>
+
+                    <!-- Embedded Video Player -->
+                    <div class="video-player" id="detail-video-container">
+                        <!-- Iframe injected here -->
+                    </div>
+
+                    <div class="view-counter" style="margin-bottom: 1rem; color: #888; font-size: 0.9rem;">
+                        <i class="ph ph-eye"></i> Views: <span id="view-count">0</span>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-bar">
+                        <button class="btn-action" id="btn-watchlist" onclick="app.toggleWatchlist()">
+                            <i class="ph ph-plus"></i> Add to Watchlist
+                        </button>
+                        <button class="btn-action" onclick="app.handleLike()">
+                            <i class="ph ph-thumbs-up"></i> Like
+                        </button>
+                        <button class="btn-action" onclick="app.handleDislike()">
+                            <i class="ph ph-thumbs-down"></i> Dislike
+                        </button>
+                    </div>
+
+                    <!-- Rating System -->
+                    <div class="rating-section">
+                        <h3>Rate this Movie</h3>
+                        <div class="stars" id="star-rating">
+                            <i class="ph ph-star" data-value="1"></i>
+                            <i class="ph ph-star" data-value="2"></i>
+                            <i class="ph ph-star" data-value="3"></i>
+                            <i class="ph ph-star" data-value="4"></i>
+                            <i class="ph ph-star" data-value="5"></i>
+                        </div>
+                        <p id="rating-text" style="margin-top:0.5rem; color:#888;">Click to rate</p>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="comments-section">
+                        <h3>Comments</h3>
+                        <div class="comment-form">
+                            <div class="form-group">
+                                <input type="text" id="comment-user" class="form-control" placeholder="Your Name">
+                            </div>
+                            <div class="form-group">
+                                <textarea id="comment-text" class="form-control" rows="3" placeholder="Write a comment..."></textarea>
+                            </div>
+                            <button class="btn-primary" onclick="app.addComment()">Post Comment</button>
+                        </div>
+                        <div class="comment-list" id="comment-list">
+                            <!-- Comments injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast">Notification Message</div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="#"><i class="ph ph-facebook-logo"></i></a>
+                <a href="#"><i class="ph ph-twitter-logo"></i></a>
+                <a href="#"><i class="ph ph-instagram-logo"></i></a>
+                <a href="#"><i class="ph ph-youtube-logo"></i></a>
+            </div>
+            <p>&copy; 2026 Film Website | Developed by Minura Thejan</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        /* =========================================
+           DATA & STATE MANAGEMENT
+           ========================================= */
+        const moviesData = [
+            {
+                id: 1,
+                title: "Infinite Horizons",
+                year: "2024",
+                duration: "2h 10m",
+                genre: "Sci-Fi",
+                rating: 4.8,
+                views: 1250,
+                description: "In a future where humanity has colonized the stars, a lone pilot discovers a conspiracy that threatens the fragile peace between worlds.",
+                poster: "https://picsum.photos/seed/mov1/300/450",
+                video: "https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1&mute=1" // Big Buck Bunny trailer placeholder
+            },
+            {
+                id: 2,
+                title: "The Last Detective",
+                year: "2023",
+                duration: "1h 55m",
+                genre: "Mystery",
+                rating: 4.2,
+                views: 840,
+                description: "A retired detective is pulled back into the force one last time to solve the case that ruined his career.",
+                poster: "https://picsum.photos/seed/mov2/300/450",
+                video: "https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1&mute=1"
+            },
+            {
+                id: 3,
+                title: "Crimson Shadows",
+                year: "2023",
+                duration: "2h 30m",
+                genre: "Action",
+                rating: 3.9,
+                views: 2300,
+                description: "An assassin seeks redemption after being betrayed by the very agency he served for decades.",
+                poster: "https://picsum.photos/seed/mov3/300/450",
+                video: "https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1&mute=1"
+            },
+            {
+                id: 4,
+                title: "Echoes of Time",
+                year: "2022",
+                duration: "1h 45m",
+                genre: "Drama",
+                rating: 4.5,
+                views: 560,
+                description: "A heartwarming story about love, loss, and the connections that bind us across generations.",
+                poster: "https://picsum.photos/seed/mov4/300/450",
+                video: "https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1&mute=1"
+            },
+            {
+                id: 5,
+                title: "Cyber Punk 2099",
+                year: "2025",
+                duration: "2h 05m",
+                genre: "Sci-Fi",
+                rating: 4.7,
+                views: 3100,
+                description: "In a neon-soaked metropolis, a hacker uncovers a secret that could change the digital landscape forever.",
+                poster: "https://picsum.photos/seed/mov5/300/450",
+                video: "https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1&mute=1"
+            },
+            {
+                id: 6,
+                title: "Wilderness",
+                year: "2023",
+                duration: "1h 50m",
+                genre: "Adventure",
+                rating: 4.0,
+                views: 900,
+                description: "A group of friends get lost in the Amazon rainforest and must survive against nature and an unknown predator.",
+                poster: "https://picsum.photos/seed/mov6/300/450",
+                video: "https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1&mute=1"
+            },
+            {
+                id: 7,
+                title: "Laugh Track",
+                year: "2024",
+                duration: "1h 40m",
+                genre: "Comedy",
+                rating: 3.5,
+                views: 1200,
+                description: "A struggling comedian accidentally becomes the star of a reality TV show, leading to hilarious consequences.",
+                poster: "https://picsum.photos/seed/mov7/300/450",
+                video: "https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1&mute=1"
+            },
+            {
+                id: 8,
+                title: "Nightmare Realm",
+                year: "2022",
+                duration: "1h 55m",
+                genre: "Horror",
+                rating: 4.1,
+                views: 1800,
+                description: "Paranormal investigators spend a night in an asylum known for its unspeakable horrors.",
+                poster: "https://picsum.photos/seed/mov8/300/450",
+                video: "https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1&mute=1"
+            }
+        ];
+
+        /* =========================================
+           APPLICATION LOGIC
+           ========================================= */
+        const app = {
+            currentMovieId: null,
+            watchlist: JSON.parse(localStorage.getItem('watchlist')) || [],
+            userRatings: JSON.parse(localStorage.getItem('userRatings')) || {},
+            comments: JSON.parse(localStorage.getItem('comments')) || {},
+
+            init: function() {
+                this.renderGrid(moviesData);
+                this.setupSearch();
+                this.setupStarRating();
+            },
+
+            // --- Navigation ---
+            showHome: function() {
+                document.getElementById('home-view').style.display = 'block';
+                document.getElementById('details-view').style.display = 'none';
+                window.scrollTo(0, 0);
+                this.currentMovieId = null;
+            },
+
+            showMovieDetails: function(id) {
+                const movie = moviesData.find(m => m.id === id);
+                if (!movie) return;
+
+                this.currentMovieId = id;
+
+                // Update DOM elements
+                document.getElementById('detail-poster').src = movie.poster;
+                document.getElementById('detail-title').textContent = movie.title;
+                document.getElementById('detail-year').textContent = movie.year;
+                document.getElementById('detail-duration').textContent = movie.duration;
+                document.getElementById('detail-genre').textContent = movie.genre;
+                document.getElementById('detail-rating').textContent = movie.rating;
+                document.getElementById('detail-desc').textContent = movie.description;
+                
+                // Video Player (Iframe)
+                const videoContainer = document.getElementById('detail-video-container');
+                videoContainer.innerHTML = `<iframe src="${movie.video}" title="Trailer" allowfullscreen></iframe>`;
+
+                // View Counter Logic
+                movie.views++;
+                document.getElementById('view-count').textContent = movie.views;
+
+                // Watchlist Button State
+                this.updateWatchlistButton();
+
+                // Load Comments
+                this.renderComments();
+
+                // Load User Rating
+                this.updateStarDisplay(this.userRatings[id] || 0);
+
+                // Switch View
+                document.getElementById('home-view').style.display = 'none';
+                document.getElementById('details-view').style.display = 'block';
+                window.scrollTo(0, 0);
+            },
+
+            // --- Grid & Search ---
+            renderGrid: function(movies) {
+                const grid = document.getElementById('movie-grid');
+                grid.innerHTML = '';
+                
+                if(movies.length === 0) {
+                    grid.innerHTML = '<p style="color:#888; grid-column: 1/-1; text-align:center;">No movies found.</p>';
+                    return;
+                }
+
+                movies.forEach(movie => {
+                    const card = document.createElement('div');
+                    card.className = 'movie-card';
+                    card.onclick = () => this.showMovieDetails(movie.id);
+                    card.innerHTML = `
+                        <div class="poster-wrapper">
+                            <img src="${movie.poster}" alt="${movie.title}">
+                        </div>
+                        <div class="movie-info">
+                            <div class="movie-title">${movie.title}</div>
+                            <div class="movie-meta">
+                                <span>${movie.year}</span>
+                                <span class="rating-badge">${movie.rating}</span>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            },
+
+            setupSearch: function() {
+                const searchInput = document.getElementById('search-input');
+                searchInput.addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase();
+                    const filtered = moviesData.filter(m => 
+                        m.title.toLowerCase().includes(term) || 
+                        m.genre.toLowerCase().includes(term)
+                    );
+                    this.renderGrid(filtered);
+                    // Ensure we are on home view when searching
+                    if(document.getElementById('details-view').style.display === 'block') {
+                        this.showHome();
+                    }
+                });
+            },
+
+            // --- Watchlist ---
+            toggleWatchlist: function() {
+                if (!this.currentMovieId) return;
+
+                const index = this.watchlist.indexOf(this.currentMovieId);
+                if (index === -1) {
+                    this.watchlist.push(this.currentMovieId);
+                    this.showToast('Added to Watchlist');
+                } else {
+                    this.watchlist.splice(index, 1);
+                    this.showToast('Removed from Watchlist');
+                }
+                
+                localStorage.setItem('watchlist', JSON.stringify(this.watchlist));
+                this.updateWatchlistButton();
+            },
+
+            updateWatchlistButton: function() {
+                const btn = document.getElementById('btn-watchlist');
+                const icon = btn.querySelector('i');
+                const index = this.watchlist.indexOf(this.currentMovieId);
+
+                if (index !== -1) {
+                    btn.classList.add('active');
+                    btn.innerHTML = '<i class="ph ph-check"></i> In Watchlist';
+                } else {
+                    btn.classList.remove('active');
+                    btn.innerHTML = '<i class="ph ph-plus"></i> Add to Watchlist';
+                }
+            },
+
+            // --- Interactions ---
+            handleLike: function() {
+                this.showToast('You liked this movie!');
+            },
+
+            handleDislike: function() {
+                this.showToast('You disliked this movie.');
+            },
+
+            // --- Rating System ---
+            setupStarRating: function() {
+                const stars = document.querySelectorAll('#star-rating i');
+                stars.forEach(star => {
+                    star.addEventListener('click', (e) => {
+                        const value = parseInt(e.target.getAttribute('data-value'));
+                        this.saveRating(value);
+                    });
+                });
+            },
+
+            saveRating: function(value) {
+                if (!this.currentMovieId) return;
+                
+                this.userRatings[this.currentMovieId] = value;
+                localStorage.setItem('userRatings', JSON.stringify(this.userRatings));
+                
+                this.updateStarDisplay(value);
+                this.showToast(`You rated this movie ${value} star${value > 1 ? 's' : ''}`);
+            },
+
+            updateStarDisplay: function(value) {
+                const stars = document.querySelectorAll('#star-rating i');
+                const text = document.getElementById('rating-text');
+                stars.forEach(star => {
+                    const starVal = parseInt(star.getAttribute('data-value'));
+                    if (starVal <= value) {
+                        star.classList.add('active');
+                        star.classList.replace('ph-star', 'ph-star-fill');
+                    } else {
+                        star.classList.remove('active');
+                        star.classList.replace('ph-star-fill', 'ph-star');
+                    }
+                });
+                
+                if(value > 0) {
+                    text.textContent = `Your Rating: ${value}/5`;
+                } else {
+                    text.textContent = "Click to rate";
+                }
+            },
+
+            // --- Comments ---
+            addComment: function() {
+                if (!this.currentMovieId) return;
+
+                const user = document.getElementById('comment-user').value;
+                const text = document.getElementById('comment-text').value;
+
+                if (!user || !text) {
+                    this.showToast('Please enter a name and comment.');
+                    return;
+                }
+
+                const newComment = {
+                    id: Date.now(),
+                    user: user,
+                    text: text,
+                    date: new Date().toLocaleString()
+                };
+
+                // Initialize array for movie if not exists
+                if (!this.comments[this.currentMovieId]) {
+                    this.comments[this.currentMovieId] = [];
+                }
+
+                this.comments[this.currentMovieId].unshift(newComment); // Add to top
+                localStorage.setItem('comments', JSON.stringify(this.comments));
+
+                // Clear inputs
+                document.getElementById('comment-text').value = '';
+                
+                this.renderComments();
+                this.showToast('Comment posted!');
+            },
+
+            deleteComment: function(commentId) {
+                if (!this.currentMovieId) return;
+
+                const movieComments = this.comments[this.currentMovieId];
+                this.comments[this.currentMovieId] = movieComments.filter(c => c.id !== commentId);
+                
+                localStorage.setItem('comments', JSON.stringify(this.comments));
+                this.renderComments();
+            },
+
+            renderComments: function() {
+                const list = document.getElementById('comment-list');
+                list.innerHTML = '';
+                
+                const movieComments = this.comments[this.currentMovieId] || [];
+
+                if (movieComments.length === 0) {
+                    list.innerHTML = '<p style="color:#666; font-style:italic;">No comments yet. Be the first!</p>';
+                    return;
+                }
+
+                movieComments.forEach(comment => {
+                    const item = document.createElement('div');
+                    item.className = 'comment-item';
+                    item.innerHTML = `
+                        <div class="comment-content">
+                            <h4>${comment.user} • <span style="font-size:0.8em">${comment.date}</span></h4>
+                            <p class="comment-text">${comment.text}</p>
+                        </div>
+                        <button class="delete-btn" onclick="app.deleteComment(${comment.id})">Delete</button>
+                    `;
+                    list.appendChild(item);
+                });
+            },
+
+            // --- Utilities ---
+            showToast: function(message) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        };
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+
+    </script>
+</body>
+</html>
